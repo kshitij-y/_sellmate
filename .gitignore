@@ -32,5 +32,4 @@ Thumbs.db
 **/docker-volume/
 
 # Turbo
-turbo/
-.cache/
+.turbo/
