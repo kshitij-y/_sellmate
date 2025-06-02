@@ -1,0 +1,7 @@
+{
+    "name": "@sellmate/db",
+    "version": "1.0.0",
+    "main": "./db.ts",
+    "types": "./db.ts"
+  }
+  
