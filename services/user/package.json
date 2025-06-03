@@ -1,0 +1,17 @@
+{
+  "name": "@sellmate/user",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "hono": "^3.11.7",
+    "dotenv": "^16.3.1",
+    "@sellmate/db": "*"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}

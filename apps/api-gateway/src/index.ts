@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { auth } from "./utils/auth.js";
 import { sendResponse } from "./utils/response.js";
+import { userRoutes } from "./routes/user.js";
 
 const app = new Hono();
 app.use("*", async (c, next) => {
@@ -37,6 +38,9 @@ app.get("/", (c) => {
 app.notFound((c) => {
   return sendResponse(c, 404, false, "Route not found");
 });
+
+app.route("/api/user", userRoutes);
+
 
 serve(
   {

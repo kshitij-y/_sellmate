@@ -4,9 +4,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setUser,
-  setError,
   signOut as clearSession,
-  setLoading,
 } from "@/lib/store/Slices/authSlice";
 import { RootState } from "@/lib/store/store";
 

@@ -6,8 +6,8 @@ import { jwt } from "better-auth/plugins";
 import { sendEmail } from "./mailer.js";
 
 
-const FE_URL = process.env.FE_URL || "http://localhost:3001";
-const BE_URL = process.env.BE_URL || "http://localhost:3000";
+const FE_URL = process.env.FE_URL;
+const BE_URL = process.env.BE_URL;
 const JWT_SECRET = process.env.JWT_SECRET!;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
@@ -46,5 +46,5 @@ export const auth = betterAuth({
       });
     },
   },
-  trustedOrigins: [BE_URL, FE_URL],
+  trustedOrigins: [BE_URL, FE_URL].filter((url): url is string => typeof url === "string"),
 });
