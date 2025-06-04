@@ -1,16 +1,17 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@sellmate/db";
 import { schema } from "@sellmate/db/drizzle/schema";
 import { jwt } from "better-auth/plugins";
 import { sendEmail } from "./mailer.js";
-
+import { getDb } from "@sellmate/db";
 
 const FE_URL = process.env.FE_URL;
 const BE_URL = process.env.BE_URL;
 const JWT_SECRET = process.env.JWT_SECRET!;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
+
+const db = getDb();
 
 export const auth = betterAuth({
   plugins: [jwt()],
