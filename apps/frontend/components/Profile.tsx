@@ -11,10 +11,12 @@ import Loader from "./ui/Loader";
 import { Button } from "./ui/button";
 import ChangePassword from "./ChangePassword";
 import { useProfile } from "@/lib/hooks/useProfile";
+import useAddress from "@/lib/hooks/useAddress";
 
 export default function ProfilePage() {
-  const { address } = useSelector((state: RootState) => state.address);
+  const { addresses }  = useAddress();
   const { user, loading } = useProfile();
+  const address = addresses;
 
   const name = user?.name || "User";
   const email = user?.email || "No Email";
@@ -28,7 +30,7 @@ export default function ProfilePage() {
 
   const phone = address?.phone || "No Phone";
   const fullAddress = address
-    ? `${address.address}, ${address.city}, ${address.state}, ${address.country}, ${address.postal_code}`
+    ? `${address.address_line1}, ${address.city}, ${address.country}, ${address.pin_code}`
     : "No Address Provided";
 
   if (loading) {
