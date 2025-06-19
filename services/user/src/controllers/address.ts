@@ -259,6 +259,45 @@ export const deleteAddress = async (c: Context) => {
   }
 };
 
-// export const getAddressById = async (c: Context) => {
-//   const id = c.req.param("id");
-// }
+export const getdefaultAddress = async (c: Context) => {
+  try {
+    const user = c.get("user");
+
+    if (!user) {
+      return sendResponse(c, 401, false, "Unauthorized: User not found");
+    }
+
+    const user_id = user.id;
+
+    const defaultAddress = await db
+      .select({
+        id: address.id,
+        address_line1: address.address_line1,
+        address_line2: address.address_line2,
+        city: address.city,
+        phone: address.phone,
+        pin_code: address.pin_code,
+        country: address.country,
+      })
+      .from(user_address)
+      .innerJoin(address, eq(user_address.address_id, address.id))
+      .where(
+        and(eq(user_address.user_id, user_id), eq(user_address.default, true))
+      );
+
+    if (defaultAddress.length === 0) {
+      return sendResponse(c, 200, true, "No default address found", []);
+    }
+
+    return sendResponse(
+      c,
+      200,
+      true,
+      "Default address retrieved successfully",
+      defaultAddress[0]
+    );
+  } catch (error) {
+    console.error("Error retrieving default address:", error);
+    return sendResponse(c, 500, false, "Failed to retrieve default address");
+  }
+};

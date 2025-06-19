@@ -41,7 +41,7 @@ export default function ProfileEditor() {
     try {
       setLoading(true);
       await updateUserProfile(userForm);
-      setOpen(false); // Close dialog after successful update
+      setOpen(false);
     } catch (error) {
       console.error("Failed to update profile:", error);
     } finally {

@@ -17,16 +17,11 @@ import { toast } from "sonner";
 const useAddress = () => {
   const dispatch = useDispatch();
   const addresses = useSelector((state: RootState) => state.address.addresses);
+
   const [loading, setLoading] = useState(false);
   const [error, setLocalError] = useState<string | null>(null);
   const hasFetched = useRef(false);
 
-  useEffect(() => {
-    if (!hasFetched.current && addresses && addresses.length === 0) {
-      hasFetched.current = true;
-      fetchAddresses();
-    }
-  }, [addresses]);
   
 
   const fetchAddresses = useCallback(async () => {
@@ -34,7 +29,7 @@ const useAddress = () => {
     setLocalError(null);
     try {
       const result = await fetcher<ApiResponse<Address[]>>(
-        "/api/user/address/getAddress",
+        "/api/user/address",
         {
           method: "GET",
           credentials: "include",
@@ -59,6 +54,13 @@ const useAddress = () => {
       setLoading(false);
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchAddresses();
+    }
+  }, [fetchAddresses]);
   
 
   const addAddress = useCallback(
@@ -159,6 +161,12 @@ const useAddress = () => {
     [dispatch]
   );
 
+  const getDefaultAddress = useCallback(() => {
+    const defaultAddress = addresses?.find((addr) => addr.is_default);
+    return defaultAddress || null;
+  }, [addresses]);
+
+
   return {
     addresses,
     loading,
@@ -167,6 +175,7 @@ const useAddress = () => {
     addAddress,
     updateAddress,
     removeAddress,
+    getDefaultAddress,
   };
 };
 

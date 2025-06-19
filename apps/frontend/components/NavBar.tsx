@@ -8,7 +8,8 @@ import { Input } from "./ui/input";
 import { MapPin } from "lucide-react";
 
 export default function NavBar() {
-  const { address } = useAddress();
+  const { getDefaultAddress } = useAddress();
+  const address = getDefaultAddress();
   const location = address?.city;
 
   return (

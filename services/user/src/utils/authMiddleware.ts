@@ -6,7 +6,6 @@ import type { MiddlewareHandler } from "hono";
 export const authMiddleware: MiddlewareHandler<any, "*"> = async (c, next) => {
   try {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    console.log("re");
     if (!session) {
       console.log("No session", session);
       c.set("user", null);
@@ -14,7 +13,7 @@ export const authMiddleware: MiddlewareHandler<any, "*"> = async (c, next) => {
       return next();
     }
 
-    console.log("Session found:", session);
+    // console.log("Session found:", session);
 
 
     c.set("user", session.user);

@@ -1,6 +1,5 @@
 "use client";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store/store";
+
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -14,10 +13,9 @@ import { useProfile } from "@/lib/hooks/useProfile";
 import useAddress from "@/lib/hooks/useAddress";
 
 export default function ProfilePage() {
-  const { addresses }  = useAddress();
+  const { getDefaultAddress } = useAddress();
   const { user, loading } = useProfile();
-  const address = addresses;
-
+  const address = getDefaultAddress();
   const name = user?.name || "User";
   const email = user?.email || "No Email";
   const image = user?.image || "";
