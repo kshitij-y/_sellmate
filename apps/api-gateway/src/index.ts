@@ -4,6 +4,8 @@ import { cors } from "hono/cors";
 import { auth } from "./utils/auth.js";
 import { sendResponse } from "./utils/response.js";
 import { userRoutes } from "./routes/user.js";
+import { cartRoutes } from "./routes/cart.js";
+import { wishRoutes } from "./routes/wish.js";
 
 const app = new Hono();
 app.use("*", async (c, next) => {
@@ -39,7 +41,8 @@ app.notFound((c) => {
 });
 
 app.route("/api/user", userRoutes);
-
+app.route("/api/cart", cartRoutes);
+app.route("/api/wishlist", wishRoutes);
 
 serve(
   {
