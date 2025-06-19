@@ -8,15 +8,15 @@ const db = getDb();
 
 export const getUserProfile = async (c: Context) => {
   try {
-    const userData = c.get("user");
-    if (!userData) {
+    const user = c.get("user");
+    if (!user) {
       return sendResponse(c, 401, false, "Unauthorized: User not found");
     }
 
     const userProfile = await db
       .select()
       .from(user)
-      .where(eq(user.id, userData.id))
+      .where(eq(user.id, user.id))
       .limit(1);
 
     if (!userProfile.length) {
@@ -38,8 +38,8 @@ export const getUserProfile = async (c: Context) => {
 
 export const updateUserProfile = async (c: Context) => {
   try {
-    const userData = c.get("user");
-    if (!userData) {
+    const user = c.get("user");
+    if (!user) {
       return sendResponse(c, 401, false, "Unauthorized: User not found");
     }
 
@@ -59,7 +59,7 @@ export const updateUserProfile = async (c: Context) => {
     const result = await db
       .update(user)
       .set(updatedFields)
-      .where(eq(user.id, userData.id))
+      .where(eq(user.id, user.id))
       .returning();
 
     return sendResponse(
