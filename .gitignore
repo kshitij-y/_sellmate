@@ -6,7 +6,7 @@ yarn-error.log*
 pnpm-debug.log*
 # Drizzle
 packages/db/drizzle/meta/
-
+*.tgz
 # Build
 dist/
 build/

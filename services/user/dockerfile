@@ -1,11 +1,11 @@
-FROM node:20
+FROM node:24-alpine
 
 WORKDIR /app
 
 COPY . .
-COPY ../../packages/auth ./node_modules/@sellmate/auth
 
-RUN npm install
+RUN npm install auth.tgz db.tgz
+
 RUN npm run build
 
 EXPOSE 4000

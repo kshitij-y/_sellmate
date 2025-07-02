@@ -2,5 +2,14 @@
   "name": "@sellmate/db",
   "version": "1.0.0",
   "main": "./db.ts",
-  "types": "./db.ts"
+  "types": "./db.ts",
+  "dependencies": {
+    "@types/node": "^24.0.10",
+    "better-auth": "^1.2.12",
+    "dotenv": "^17.0.1",
+    "drizzle-kit": "^0.31.4",
+    "drizzle-orm": "^0.44.2",
+    "nodemailer": "^7.0.4",
+    "pg": "^8.16.3"
+  }
 }

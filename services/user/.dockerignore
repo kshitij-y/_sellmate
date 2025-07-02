@@ -1,7 +1,7 @@
 # Ignore node_modules and env files
 node_modules
 .env
-.env.*  # if you use .env.dev or .env.prod
+.env.*  
 
 # Ignore build and debug stuff
 dist

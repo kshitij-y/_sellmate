@@ -1,11 +1,10 @@
 import { sendResponse } from "./response";
-import { auth } from "@sellmate/auth/src/utils/auth.js";
+import { getSession } from "@sellmate/auth";
 import type { MiddlewareHandler } from "hono";
-
 
 export const authMiddleware: MiddlewareHandler<any, "*"> = async (c, next) => {
   try {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
+    const session = await getSession(c.req.raw);
     if (!session) {
       console.log("No session", session);
       c.set("user", null);
@@ -13,6 +12,7 @@ export const authMiddleware: MiddlewareHandler<any, "*"> = async (c, next) => {
       return next();
     }
 
+    // console.log("Session found:", session);
 
     c.set("user", session.user);
     c.set("session", session.session);
