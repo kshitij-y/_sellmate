@@ -8,15 +8,17 @@ const db = getDb();
 
 export const getUserProfile = async (c: Context) => {
   try {
-    const user = c.get("user");
-    if (!user) {
+    const _user = c.get("user");
+    if (!_user) {
       return sendResponse(c, 401, false, "Unauthorized: User not found");
     }
+
+    const userId = _user.id;
 
     const userProfile = await db
       .select()
       .from(user)
-      .where(eq(user.id, user.id))
+      .where(eq(user.id, userId))
       .limit(1);
 
     if (!userProfile.length) {
@@ -38,10 +40,12 @@ export const getUserProfile = async (c: Context) => {
 
 export const updateUserProfile = async (c: Context) => {
   try {
-    const user = c.get("user");
-    if (!user) {
+    const _user = c.get("user");
+    if (!_user) {
       return sendResponse(c, 401, false, "Unauthorized: User not found");
     }
+
+    const userId = _user.id;
 
     const body = await c.req.json();
     const { name, image } = body;
@@ -59,7 +63,7 @@ export const updateUserProfile = async (c: Context) => {
     const result = await db
       .update(user)
       .set(updatedFields)
-      .where(eq(user.id, user.id))
+      .where(eq(user.id, userId))
       .returning();
 
     return sendResponse(

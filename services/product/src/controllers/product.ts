@@ -1,5 +1,5 @@
 import { getDb } from "@sellmate/db";
-import { cart, cart_items, product_item } from "@sellmate/db/drizzle/schema";
+import { product_item,  } from "@sellmate/db/drizzle/schema";
 import { Context } from "hono";
 import { sendResponse } from "../utils/response";
 import { eq, and } from "drizzle-orm";

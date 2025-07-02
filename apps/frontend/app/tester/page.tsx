@@ -1,102 +1,80 @@
 "use client";
+import { useState } from "react";
 
-import React, { useState } from "react";
-import useAddress from "@/lib/hooks/useAddress";
+export default function TesterPage() {
+  const [method, setMethod] = useState("GET");
+  const [url, setUrl] = useState("");
+  const [body, setBody] = useState("");
+  const [response, setResponse] = useState("");
 
-export default function TestAddAddressPage() {
-  const { addAddress, loading, error } = useAddress();
+  const sendRequest = async () => {
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: method !== "GET" ? body : undefined,
+        credentials: "include",
+      });
 
-  const [addressLine1, setAddressLine1] = useState("");
-  const [city, setCity] = useState("");
-  const [phone, setPhone] = useState("");
-  const [pinCode, setPinCode] = useState("");
-  const [country, setCountry] = useState("");
-  const [isDefault, setIsDefault] = useState(false);
+      let formatted;
+      try {
+        const json = await res.json();
+        formatted = JSON.stringify(json, null, 2);
+      } catch {
+        formatted = await res.text();
+      }
 
-  const handleAdd = async () => {
-    if (!addressLine1 || !city || !phone || !pinCode || !country) {
-      alert("Please fill all required fields");
-      return;
+      setResponse(`Status: ${res.status}\n\n${formatted}`);
+    } catch (err) {
+      setResponse(`Error: ${(err as Error).message}`);
     }
-
-    await addAddress({
-      address_line1: addressLine1,
-      address_line2: "",
-      city,
-      phone,
-      pin_code: pinCode,
-      country,
-      is_default: isDefault,
-    });
-
-    // Clear inputs
-    setAddressLine1("");
-    setCity("");
-    setPhone("");
-    setPinCode("");
-    setCountry("");
-    setIsDefault(false);
   };
+  
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Test Add Address</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white/10 p-4">
+      <div className="flex gap-2 w-full max-w-4xl">
+        <select
+          className="p-2 border rounded-lg"
+          value={method}
+          onChange={(e) => setMethod(e.target.value)}>
+          <option>GET</option>
+          <option>POST</option>
+          <option>PUT</option>
+          <option>DELETE</option>
+          <option>PATCH</option>
+        </select>
 
-      <input
-        type="text"
-        placeholder="Address Line 1"
-        value={addressLine1}
-        onChange={(e) => setAddressLine1(e.target.value)}
-      />
-      <br />
-
-      <input
-        type="text"
-        placeholder="City"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-      />
-      <br />
-
-      <input
-        type="text"
-        placeholder="Phone"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-      />
-      <br />
-
-      <input
-        type="text"
-        placeholder="Pin Code"
-        value={pinCode}
-        onChange={(e) => setPinCode(e.target.value)}
-      />
-      <br />
-
-      <input
-        type="text"
-        placeholder="Country"
-        value={country}
-        onChange={(e) => setCountry(e.target.value)}
-      />
-      <br />
-
-      <label>
-        Is Default:{" "}
         <input
-          type="checkbox"
-          checked={isDefault}
-          onChange={(e) => setIsDefault(e.target.checked)}
+          type="text"
+          className="flex-1 p-2 border rounded-lg"
+          placeholder="Enter URL"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
         />
-      </label>
-      <br />
 
-      <button onClick={handleAdd} disabled={loading}>
-        {loading ? "Adding..." : "Add Address"}
-      </button>
+        <button
+          onClick={sendRequest}
+          className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+          Send request
+        </button>
+      </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {method !== "GET" && (
+        <textarea
+          className="w-full max-w-4xl mt-4 p-2 border rounded-lg"
+          rows={5}
+          placeholder="Request body (JSON)"
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+        />
+      )}
+
+      <div className="bg-black text-green-400 whitespace-pre-wrap p-4 rounded-lg shadow-lg w-full max-w-4xl h-[50vh] mt-4 overflow-auto">
+        {response || "Response will appear here"}
+      </div>
     </div>
   );
 }

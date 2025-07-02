@@ -1,0 +1,19 @@
+# Ignore node_modules and env files
+node_modules
+.env
+.env.*  # if you use .env.dev or .env.prod
+
+# Ignore build and debug stuff
+dist
+build
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Ignore system junk
+.DS_Store
+Thumbs.db
+
+# Ignore Git
+.git
+.gitignore

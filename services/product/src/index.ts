@@ -2,9 +2,9 @@ import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import "dotenv/config";
 import { authMiddleware } from "./utils/authMiddleware.js";
-import {
-  
-} from "./controllers/product.js";
+
+import catRouter from "./routes/categories.js";
+import varRouter from "./routes/variation.js";
 
 const app = new Hono();
 app.use("*", async (c, next) => {
@@ -15,11 +15,13 @@ app.use("*", async (c, next) => {
 });
 app.use("*", authMiddleware);
 
-app.get("/", (c) => {
+app.get("/h", (c) => {
   return c.text("Hello from the product service!");
 });
 
+app.route("/categoires", catRouter);
+app.route("/variations", varRouter);
 
 const port = Number(process.env.PORT);
-console.log(`[cart] service running on http://localhost:${port}`);
+console.log(`[product] service running on http://localhost:${port}`);
 serve({ fetch: app.fetch, port });

@@ -1,11 +1,12 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { auth } from "./utils/auth.js";
+import { auth } from "@sellmate/auth";
 import { sendResponse } from "./utils/response.js";
 import { userRoutes } from "./routes/user.js";
 import { cartRoutes } from "./routes/cart.js";
 import { wishRoutes } from "./routes/wish.js";
+import { productRoutes } from "./routes/product.js";
 
 const app = new Hono();
 app.use("*", async (c, next) => {
@@ -43,7 +44,7 @@ app.notFound((c) => {
 app.route("/api/user", userRoutes);
 app.route("/api/cart", cartRoutes);
 app.route("/api/wishlist", wishRoutes);
-
+app.route("/api/product", productRoutes);
 serve(
   {
     fetch: app.fetch,

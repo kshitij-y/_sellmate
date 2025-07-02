@@ -82,11 +82,22 @@ export const category = pgTable(
   ]
 );
 
+export const categoryVariation = pgTable(
+  "category_variation",
+  {
+    category_id: uuid("category_id")
+      .references(() => category.id)
+      .notNull(),
+    variation_id: uuid("variation_id")
+      .references(() => variation.id)
+      .notNull(),
+  },
+  (t) => [primaryKey(t.category_id, t.variation_id)]
+);
+
+
 export const variation = pgTable("variation", {
   id: uuid("id").defaultRandom().primaryKey(),
-  category_id: uuid("category_id")
-    .references(() => category.id)
-    .notNull(),
   name: text("name").notNull(),
 });
 
@@ -267,4 +278,5 @@ export const schema = {
   cart_items,
   address,
   user_address,
+  categoryVariation,
 };
