@@ -22,3 +22,6 @@ export const getDb = () => {
 
   return dbInstance;
 };
+
+export * from "drizzle-orm";
+export * from "./drizzle/schema";

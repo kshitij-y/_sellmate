@@ -9,10 +9,9 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
-    "@sellmate/auth": "file:../../packages/auth",
-    "@sellmate/db": "file:../../packages/db",
+    "@sellmate/auth": "file:./sellmate-auth-1.0.0.tgz",
+    "@sellmate/db": "file:./sellmate-db-1.0.0.tgz",
     "dotenv": "^17.0.1",
-    "drizzle-orm": "^0.44.2",
     "hono": "^4.7.4",
     "uuid": "^11.1.0"
   },

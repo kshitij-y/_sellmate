@@ -1,9 +1,6 @@
-import { getDb } from "@sellmate/db";
-import {  user } from "@sellmate/db/drizzle/schema";
+import { getDb, eq, user } from "@sellmate/db";
 import { Context } from "hono";
 import { sendResponse } from "../utils/response";
-import { eq } from "drizzle-orm";
-
 const db = getDb();
 
 export const getUserProfile = async (c: Context) => {
