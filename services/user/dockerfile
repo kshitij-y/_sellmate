@@ -1,12 +1,25 @@
-FROM node:24-alpine
+FROM node:24-alpine AS builder
 
-WORKDIR /app
+WORKDIR /user
+
+COPY package*.json ./
+COPY sellmate-*.tgz ./
+
+RUN npm install ./sellmate-db-1.0.0.tgz ./sellmate-auth-1.0.0.tgz && npm install
 
 COPY . .
 
-RUN npm install auth.tgz db.tgz
+# RUN npx drizzle-kit push --config ./db/drizzle.config.ts
 
-RUN npm run build
+RUN npm run build 
+
+FROM node:24-alpine
+
+WORKDIR /user
+
+COPY --from=builder /user/dist ./dist
+COPY --from=builder /user/package*.json ./
+COPY --from=builder /user/node_modules ./node_modules
 
 EXPOSE 4000
 

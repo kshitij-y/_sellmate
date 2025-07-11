@@ -9,13 +9,15 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
-    "@sellmate/auth": "file:./sellmate-auth-1.0.0.tgz",
-    "@sellmate/db": "file:./sellmate-db-1.0.0.tgz",
+    "@sellmate/auth": "file:sellmate-auth-1.0.0.tgz",
+    "@sellmate/db": "file:sellmate-db-1.0.0.tgz",
     "dotenv": "^17.0.1",
     "hono": "^4.7.4",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@types/nodemailer": "^6.4.17",
+    "@types/pg": "^8.15.4",
     "tsx": "^4.7.0",
     "typescript": "^5.4.0"
   }

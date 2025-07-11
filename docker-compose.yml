@@ -1,0 +1,7 @@
+services:
+  user:
+    build: kshitijdock032/user-service:latest
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./services/user/.env

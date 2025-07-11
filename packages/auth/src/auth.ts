@@ -3,9 +3,9 @@ dotenv.config();
 
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { schema } from "@sellmate/db/drizzle/schema";
+import { schema } from "@sellmate/db";
 import { jwt } from "better-auth/plugins";
-import { sendEmail } from "./mailer";
+import { sendEmail } from "./mailer.js";
 import { getDb } from "@sellmate/db";
 
 const FE_URL = process.env.FE_URL;

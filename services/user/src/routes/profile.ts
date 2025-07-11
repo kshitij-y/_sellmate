@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import {
   getUserProfile,
   updateUserProfile,
-} from "../controllers/profile";
+} from "../controllers/profile.js";
 
 const profileRouter = new Hono();
 

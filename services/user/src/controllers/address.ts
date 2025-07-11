@@ -1,6 +1,6 @@
 import { address, user_address, eq, and, ne, getDb } from "@sellmate/db";
 import { Context } from "hono";
-import { sendResponse } from "../utils/response";
+import { sendResponse } from "../utils/response.js";
 import { v4 as uuidv4 } from "uuid";
 
 const db = getDb();

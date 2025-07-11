@@ -1,4 +1,4 @@
-import { sendResponse } from "./response";
+import { sendResponse } from "./response.js";
 import { getSession } from "@sellmate/auth";
 import type { MiddlewareHandler } from "hono";
 

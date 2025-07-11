@@ -1,6 +1,6 @@
 import { getDb, eq, user } from "@sellmate/db";
 import { Context } from "hono";
-import { sendResponse } from "../utils/response";
+import { sendResponse } from "../utils/response.js";
 const db = getDb();
 
 export const getUserProfile = async (c: Context) => {

@@ -2,14 +2,25 @@
   "name": "@sellmate/auth",
   "version": "1.0.0",
   "type": "module",
-  "main": "./index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
+    "@sellmate/db": "file:sellmate-db-1.0.0.tgz",
     "@types/node": "^24.0.10",
     "better-auth": "^1.2.12",
     "dotenv": "^17.0.1",
     "drizzle-orm": "^0.44.2",
     "nodemailer": "^7.0.4",
-    "pg": "^8.16.3",
-    "@sellmate/db": "file:../db"
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^6.4.17",
+    "@types/pg": "^8.15.4"
   }
 }

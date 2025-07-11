@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import "dotenv/config";
-import { authMiddleware } from "./utils/authMiddleware";
-import { address } from "./routes/address";
-import profileRouter from "./routes/profile";
+import { authMiddleware } from "./utils/authMiddleware.js";
+import { address } from "./routes/address.js";
+import profileRouter from "./routes/profile.js";
 
 
 const app = new Hono();
@@ -26,4 +26,4 @@ app.route("/profile", profileRouter);
 
 const port = Number(process.env.PORT);
 console.log(`[user] service running on http://localhost:${port}`);
-serve({ fetch: app.fetch, port });
+serve({ fetch: app.fetch, port, hostname: "0.0.0.0" });

@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { getAddress,getdefaultAddress, addAddress, updateAddress, deleteAddress } from "../controllers/address";
+import { getAddress,getdefaultAddress, addAddress, updateAddress, deleteAddress } from "../controllers/address.js";
 const address = new Hono();
 
 address.get("/", getAddress);
