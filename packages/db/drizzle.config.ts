@@ -6,7 +6,7 @@ console.log("Loaded DATABASE_URL:", process.env.DATABASE_URL);
 
 export default defineConfig({
   out: "./packages/db/drizzle",
-  schema: "./packages/db/drizzle/schema.ts",
+  schema: "./packages/db/src/drizzle/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL!,

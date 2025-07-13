@@ -4,7 +4,7 @@ const address = new Hono();
 
 address.get("/", getAddress);
 address.post("/addAddress", addAddress);
-address.put("/updateAddress", updateAddress);
+address.patch("/updateAddress", updateAddress);
 address.delete("/deleteAddress", deleteAddress);
 address.get("/getdefault", getdefaultAddress);
 

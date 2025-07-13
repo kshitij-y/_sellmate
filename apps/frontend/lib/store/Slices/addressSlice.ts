@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Address from "@/lib/types/address";
+import  Address  from "@/lib/types/address";
 
 interface AddressState {
   addresses: Address[];
@@ -22,15 +22,20 @@ const addressSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+
     addAddress: (state, action: PayloadAction<Address>) => {
-      if (action.payload.is_default) {
+      const newAddress = action.payload;
+
+      if (newAddress.is_default) {
         state.addresses = state.addresses.map((addr) => ({
           ...addr,
           is_default: false,
         }));
       }
-      state.addresses.push(action.payload);
+
+      state.addresses.push(newAddress);
     },
+
     updateAddress: (state, action: PayloadAction<Address>) => {
       const updated = action.payload;
 
@@ -45,6 +50,7 @@ const addressSlice = createSlice({
         }
       }
     },
+
     removeAddress: (state, action: PayloadAction<string>) => {
       const idToRemove = action.payload;
       const toRemove = state.addresses.find((a) => a.id === idToRemove);
@@ -55,13 +61,16 @@ const addressSlice = createSlice({
         state.addresses[0].is_default = true;
       }
     },
+
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
+
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
       state.loading = false;
     },
+
     clearAddresses: (state) => {
       state.addresses = [];
       state.error = null;

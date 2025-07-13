@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 
-const BE_URL = process.env.BE_URL;
+const BE_URL = process.env.NEXT_PUBLIC_BE_URL;
 
 export const API_URL = BE_URL || "http://localhost:3000";
 

@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
-    "@sellmate/auth": "file:../../packages/auth",
+    "@sellmate/auth": "file:sellmate-auth-1.0.0.tgz",
     "@supabase/postgrest-js": "^1.19.3",
     "better-auth": "^1.2.12",
     "dotenv": "^17.0.1",

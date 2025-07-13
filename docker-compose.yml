@@ -1,7 +1,24 @@
 services:
   user:
-    build: kshitijdock032/user-service:latest
+    image: kshitijdock032/user-service:latest
     ports:
       - "4000:4000"
     env_file:
       - ./services/user/.env
+    
+
+  frontend:
+    image: kshitijdock032/frontend:latest
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./apps/frontend/.env
+    depends_on:
+      - api-gatway
+
+  api-gatway:
+    image: kshitijdock032/api-gateway:latest
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./apps/api-gateway/.env

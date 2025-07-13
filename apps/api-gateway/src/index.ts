@@ -7,6 +7,7 @@ import { userRoutes } from "./routes/user.js";
 import { cartRoutes } from "./routes/cart.js";
 import { wishRoutes } from "./routes/wish.js";
 import { productRoutes } from "./routes/product.js";
+import "dotenv/config";
 
 const app = new Hono();
 app.use("*", async (c, next) => {
@@ -16,13 +17,13 @@ app.use("*", async (c, next) => {
   await next();
 });
 
+const fe_url =
+  process.env.FE_URL ||
+  "http://ec2-13-61-14-231.eu-north-1.compute.amazonaws.com:3001";
+
 app.use(
   cors({
-    origin: "http://localhost:3001",
-    allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    exposeHeaders: ["Content-Length"],
-    maxAge: 600,
+    origin: fe_url,
     credentials: true,
   })
 );
@@ -45,10 +46,13 @@ app.route("/api/user", userRoutes);
 app.route("/api/cart", cartRoutes);
 app.route("/api/wishlist", wishRoutes);
 app.route("/api/product", productRoutes);
+
+const port = Number(process.env.PORT);
 serve(
   {
     fetch: app.fetch,
-    port: 3000,
+    port: port,
+    hostname: "0.0.0.0",
   },
   (info) => {
     console.log(`Server is running on http://localhost:${info.port}`);

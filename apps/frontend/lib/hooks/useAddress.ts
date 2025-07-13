@@ -1,32 +1,34 @@
 "use client";
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetcher } from "@/lib/TanStack-Query/api";
-import ApiResponse from "@/lib/types/apiResponse";
-import Address from "@/lib/types/address";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type Address  from "@/lib/types/address";
+import type ApiResponse from "@/lib/types/apiResponse";
+import { toast } from "sonner";
+
 import {
   setAddresses,
   addAddress as addAddressAction,
   updateAddress as updateAddressAction,
   removeAddress as removeAddressAction,
   setError,
+  setLoading,
 } from "@/lib/store/Slices/addressSlice";
-import { RootState } from "../store/store";
-import { toast } from "sonner";
+import type { RootState } from "../store/store";
 
 const useAddress = () => {
   const dispatch = useDispatch();
-  const addresses = useSelector((state: RootState) => state.address.addresses);
-
-  const [loading, setLoading] = useState(false);
-  const [error, setLocalError] = useState<string | null>(null);
-  const hasFetched = useRef(false);
+  const queryClient = useQueryClient();
 
   
+  const addresses = useSelector((state: RootState) => state.address.addresses);
+  const loading = useSelector((state: RootState) => state.address.loading);
+  const error = useSelector((state: RootState) => state.address.error);
+  const hasFetched = useRef(false);
 
   const fetchAddresses = useCallback(async () => {
-    setLoading(true);
-    setLocalError(null);
+    dispatch(setLoading(true));
     try {
       const result = await fetcher<ApiResponse<Address[]>>(
         "/api/user/address",
@@ -38,37 +40,31 @@ const useAddress = () => {
 
       if (result?.success && Array.isArray(result.data)) {
         dispatch(setAddresses(result.data));
-
         if (result.data.length === 0) {
-          setLocalError("No addresses found");
           dispatch(setError("No addresses found"));
         }
       } else {
         throw new Error(result?.error || "Failed to fetch addresses");
       }
     } catch (error: any) {
-      const msg = error.message || "An unknown error occurred";
-      setLocalError(msg);
-      dispatch(setError(msg));
+      dispatch(setError(error.message || "An unknown error occurred"));
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   }, [dispatch]);
 
   useEffect(() => {
-    if (!hasFetched.current) {
+    if (!hasFetched.current && typeof window !== "undefined") {
       hasFetched.current = true;
       fetchAddresses();
     }
   }, [fetchAddresses]);
-  
 
   const addAddress = useCallback(
     async (
       newAddress: Omit<Address, "id" | "user_id" | "created_at" | "updated_at">
     ) => {
-      setLoading(true);
-      setLocalError(null);
+      dispatch(setLoading(true));
       try {
         const result = await fetcher<ApiResponse<Address>>(
           "/api/user/address/addAddress",
@@ -87,11 +83,9 @@ const useAddress = () => {
           throw new Error(result?.error || "Failed to add address");
         }
       } catch (error: any) {
-        const msg = error.message || "An unknown error occurred";
-        setLocalError(msg);
-        dispatch(setError(msg));
+        dispatch(setError(error.message || "An unknown error occurred"));
       } finally {
-        setLoading(false);
+        dispatch(setLoading(false));
       }
     },
     [dispatch]
@@ -99,8 +93,7 @@ const useAddress = () => {
 
   const updateAddress = useCallback(
     async (updatedAddress: Address) => {
-      setLoading(true);
-      setLocalError(null);
+      dispatch(setLoading(true));
       try {
         const result = await fetcher<ApiResponse<Address>>(
           "/api/user/address/updateAddress",
@@ -119,11 +112,9 @@ const useAddress = () => {
           throw new Error(result?.error || "Failed to update address");
         }
       } catch (error: any) {
-        const msg = error.message || "An unknown error occurred";
-        setLocalError(msg);
-        dispatch(setError(msg));
+        dispatch(setError(error.message || "An unknown error occurred"));
       } finally {
-        setLoading(false);
+        dispatch(setLoading(false));
       }
     },
     [dispatch]
@@ -131,8 +122,7 @@ const useAddress = () => {
 
   const removeAddress = useCallback(
     async (addressId: string) => {
-      setLoading(true);
-      setLocalError(null);
+      dispatch(setLoading(true));
       try {
         const result = await fetcher<ApiResponse<null>>(
           "/api/user/address/deleteAddress",
@@ -151,21 +141,17 @@ const useAddress = () => {
           throw new Error(result?.error || "Failed to remove address");
         }
       } catch (error: any) {
-        const msg = error.message || "An unknown error occurred";
-        setLocalError(msg);
-        dispatch(setError(msg));
+        dispatch(setError(error.message || "An unknown error occurred"));
       } finally {
-        setLoading(false);
+        dispatch(setLoading(false));
       }
     },
     [dispatch]
   );
 
   const getDefaultAddress = useCallback(() => {
-    const defaultAddress = addresses?.find((addr) => addr.is_default);
-    return defaultAddress || null;
+    return addresses.find((addr) => addr.is_default) || null;
   }, [addresses]);
-
 
   return {
     addresses,

@@ -112,7 +112,8 @@ export const updateAddress = async (c: Context) => {
 
     const user_id = user.id;
     const body = await c.req.json();
-    const address_id = body.address_id;
+    console.log("Update Address Body:", body);
+    const address_id = body.id;
 
     if (!address_id) {
       return sendResponse(c, 400, false, "Missing address_id");

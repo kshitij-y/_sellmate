@@ -18,31 +18,31 @@ import { Loader2 } from "lucide-react";
 
 export default function AddressEditor() {
   const { user } = useProfile();
-  const { address, loading, error, fetchAddress, addAddress, updateAddress } =
+  const { addresses , loading, error, addAddress, updateAddress } =
     useAddress();
   const [open, setOpen] = useState(false);
 
   const [addressForm, setAddressForm] = useState({
-    address_line1: address?.address_line1 || "",
-    address_line2: address?.address_line2 || "",
-    city: address?.city || "",
-    phone: address?.phone || "",
-    pin_code: address?.pin_code || "",
-    country: address?.country || "",
+    address_line1: addresses[0]?.address_line1 || "",
+    address_line2: addresses[0]?.address_line2 || "",
+    city: addresses[0]?.city || "",
+    phone: addresses[0]?.phone || "",
+    pin_code: addresses[0]?.pin_code || "",
+    country: addresses[0]?.country || "",
   });
 
   useEffect(() => {
-    if (address) {
+    if (addresses[0]) {
       setAddressForm({
-        address_line1: address.address_line1 || "",
-        address_line2: address.address_line2 || "",
-        city: address.city || "",
-        phone: address.phone || "",
-        pin_code: address.pin_code || "",
-        country: address.country || "",
+        address_line1: addresses[0].address_line1 || "",
+        address_line2: addresses[0].address_line2 || "",
+        city: addresses[0].city || "",
+        phone: addresses[0].phone || "",
+        pin_code: addresses[0].pin_code || "",
+        country: addresses[0].country || "",
       });
     }
-  }, [address]);
+  }, [addresses]);
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -56,8 +56,8 @@ export default function AddressEditor() {
     }
 
     try {
-      if (address?.id) {
-        await updateAddress({ ...addressForm, address_id: address.id });
+      if (addresses[0]?.id) {
+        await updateAddress({ ...addressForm, id: addresses[0].id });
       } else {
         await addAddress(addressForm);
       }
@@ -75,14 +75,14 @@ export default function AddressEditor() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button onClick={() => setOpen(true)}>
-            {address ? "Edit Address" : "Add Address"}
+            {addresses ? "Edit Address" : "Add Address"}
           </Button>
         </DialogTrigger>
 
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {address ? "Edit Address" : "Add Address"}
+              {addresses ? "Edit Address" : "Add Address"}
             </DialogTitle>
           </DialogHeader>
 
@@ -115,7 +115,7 @@ export default function AddressEditor() {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...
                 </>
-              ) : address ? (
+              ) : addresses ? (
                 "Update Address"
               ) : (
                 "Add Address"
