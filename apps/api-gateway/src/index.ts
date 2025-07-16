@@ -7,6 +7,8 @@ import { userRoutes } from "./routes/user.js";
 import { cartRoutes } from "./routes/cart.js";
 import { wishRoutes } from "./routes/wish.js";
 import { productRoutes } from "./routes/product.js";
+import { storeRoutes } from "./routes/store.js";
+
 import "dotenv/config";
 
 const app = new Hono();
@@ -46,6 +48,7 @@ app.route("/api/user", userRoutes);
 app.route("/api/cart", cartRoutes);
 app.route("/api/wishlist", wishRoutes);
 app.route("/api/product", productRoutes);
+app.route("/api/store", storeRoutes);
 
 const port = Number(process.env.PORT);
 serve(

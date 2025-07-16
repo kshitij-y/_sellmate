@@ -22,3 +22,12 @@ services:
       - "3002:3002"
     env_file:
       - ./apps/api-gateway/.env
+
+  store-service:
+    image: kshitijdock032/store-service:latest
+    ports:
+      - "4004:4004"
+    env_file:
+      - ./services/store/.env
+    depends_on:
+      - api-gatway

@@ -1,0 +1,24 @@
+FROM node:24-alpine AS builder
+
+WORKDIR /store
+
+COPY package*.json ./
+COPY sellmate-*.tgz ./
+
+RUN npm install ./sellmate-db-1.0.0.tgz ./sellmate-auth-1.0.0.tgz && npm install
+
+COPY . .
+
+RUN npm run build 
+
+FROM node:24-alpine
+
+WORKDIR /store
+
+COPY --from=builder /store/dist ./dist
+COPY --from=builder /store/package*.json ./
+COPY --from=builder /store/node_modules ./node_modules
+
+EXPOSE 4004
+
+CMD ["npm", "start"]

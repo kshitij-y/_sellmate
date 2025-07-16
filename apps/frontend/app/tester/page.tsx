@@ -15,7 +15,7 @@ export default function StoreForm() {
     const formData = new FormData(form);
 
     try {
-      const res = await fetch("http://localhost:4004/init/createStore", {
+      const res = await fetch("http://localhost:3000/api/store/init/createStore", {
         method: "POST",
         credentials: "include",
         body: formData,

@@ -16,6 +16,10 @@ const getUrl = async (file: File) => {
   };
 
   const fileUri = getDataUri(fileData);
+  
+  if (typeof fileUri.content !== "string") {
+    throw new Error("Invalid fileUri.content: must be a string");
+  }
   const result = await cloudinary.uploader.upload(fileUri.content, {
     folder: "hono_uploads",
     transformation: { width: 800, crop: "scale" },

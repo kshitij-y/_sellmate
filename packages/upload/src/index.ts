@@ -1,6 +1,6 @@
 import { configDotenv } from "dotenv";
 import { v2 as cloudinary } from "cloudinary";
-import DataURIParser from "datauri/parser";
+import DataURIParser from "datauri/parser.js";
 import path from "path";
 
 configDotenv();
