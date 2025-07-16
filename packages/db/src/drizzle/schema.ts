@@ -67,6 +67,20 @@ export const user = pgTable("user", {
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });
+export const store = pgTable("store", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  logo_url: text("logo_url"),
+  cover_url: text("cover_url"),
+
+  owner_id: text("owner_id")
+    .references(() => user.id, { onDelete: "cascade" })
+    .notNull(),
+
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
 
 export const category = pgTable(
   "category",
@@ -114,6 +128,9 @@ export const product = pgTable("product", {
   name: text("name").notNull(),
   description: text("description"),
   category_id: uuid("category_id").references(() => category.id),
+  store_id: uuid("store_id")
+    .references(() => store.id, { onDelete: "cascade" })
+    .notNull(),
 });
 
 export const product_item = pgTable("product_item", {
@@ -258,6 +275,7 @@ export const reviews = pgTable(
 
 export const schema = {
   user,
+  store,
   account,
   session,
   verification,

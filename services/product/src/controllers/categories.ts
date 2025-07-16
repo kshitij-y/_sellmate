@@ -1,5 +1,4 @@
-import { getDb } from "@sellmate/db";
-import { category } from "@sellmate/db/drizzle/schema";
+import { getDb, category } from "@sellmate/db";
 import { Context } from "hono";
 import { sendResponse } from "../utils/response";
 import { asc } from "drizzle-orm";

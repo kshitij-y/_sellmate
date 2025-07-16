@@ -7,10 +7,10 @@
     "build": "tsc"
   },
   "dependencies": {
-    "hono": "^3.11.7",
-    "dotenv": "^16.3.1",
     "@sellmate/auth": "file:./sellmate-auth-1.0.0.tgz",
-    "@sellmate/db": "file:./sellmate-db-1.0.0.tgz"
+    "@sellmate/db": "file:sellmate-db-1.0.0.tgz",
+    "dotenv": "^16.3.1",
+    "hono": "^3.11.7"
   },
   "devDependencies": {
     "tsx": "^4.7.0",

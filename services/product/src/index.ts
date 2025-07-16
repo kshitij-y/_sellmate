@@ -5,6 +5,7 @@ import { authMiddleware } from "./utils/authMiddleware.js";
 
 import catRouter from "./routes/categories.js";
 import varRouter from "./routes/variation.js";
+import { addProduct } from "./controllers/product.js";
 
 const app = new Hono();
 app.use("*", async (c, next) => {
@@ -21,6 +22,9 @@ app.get("/h", (c) => {
 
 app.route("/categoires", catRouter);
 app.route("/variations", varRouter);
+
+//product routes
+app.post("/product", addProduct);
 
 const port = Number(process.env.PORT);
 console.log(`[product] service running on http://localhost:${port}`);
