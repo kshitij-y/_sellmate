@@ -1,4 +1,4 @@
-import { getDb, eq, user } from "@sellmate/db";
+import { getDb, eq, user } from "@kshitij_npm/sell_db";
 import { Context } from "hono";
 import { sendResponse } from "../utils/response.js";
 const db = getDb();

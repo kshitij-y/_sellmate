@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
-    "@sellmate/auth": "file:sellmate-auth-1.0.0.tgz",
-    "@sellmate/db": "file:sellmate-db-1.0.0.tgz",
+    "@kshitij_npm/sell_auth": "^1.1.0",
+    "@kshitij_npm/sell_db": "^1.1.0",
     "dotenv": "^17.0.1",
     "hono": "^4.7.4",
     "uuid": "^11.1.0"

@@ -1,8 +1,11 @@
 import { Hono } from "hono";
-import { getVariations } from "../controllers/variation";
+import { getVariations, updateVariation, deleteVariation, addVariation } from "../controllers/variation";
 
 const varRouter = new Hono();
 
-varRouter.get("/:id", getVariations);
+varRouter.get("/", getVariations);
+varRouter.post("/", addVariation);
+varRouter.delete("/", deleteVariation);
+varRouter.put("/", updateVariation);
 
 export default varRouter;

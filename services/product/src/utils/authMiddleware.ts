@@ -1,5 +1,5 @@
 import { sendResponse } from "./response";
-import { getSession } from "@sellmate/auth";
+import { getSession } from "@kshitij_npm/sell_auth";
 import type { MiddlewareHandler } from "hono";
 
 export const authMiddleware: MiddlewareHandler<any, "*"> = async (c, next) => {

@@ -1,76 +1,139 @@
-// import { getDb } from "@sellmate/db";
-// import { variation, variation_option } from "@sellmate/db";
-// import { Context } from "hono";
-// import { sendResponse } from "../utils/response";
-// import { eq, inArray } from "drizzle-orm";
+import { getDb, variation, variation_option, eq, ne } from "@kshitij_npm/sell_db";
+import { Context } from "hono";
+import { sendResponse } from "../utils/response";
 
-// const db = getDb();
+const db = getDb();
 
-// export const getVariations = async (c: Context) => {
-//   const catId = c.req.param("id");
+export const addVariation = async (c: Context) => {
+  try {
+    let { name } = await c.req.json();
 
-//   console.log(`[getVariations] Fetching variations for category ID: ${catId}`);
+    if (!name) {
+      return sendResponse(c, 400, false, "Variation name is required", null);
+    }
 
-//   try {
-//     // Fetch variations for the category
-//     const variations = await db
-//       .select()
-//       .from(variation)
-//       .where(eq(variation.category_id, catId));
+    name = name.toUpperCase(); // Convert to uppercase
 
-//     if (variations.length === 0) {
-//       return sendResponse(
-//         c,
-//         404,
-//         false,
-//         "No variations found for this category",
-//         []
-//       );
-//     }
+    // Check if it already exists
+    const existing = await db
+      .select()
+      .from(variation)
+      .where(eq(variation.name, name));
+    if (existing.length > 0) {
+      return sendResponse(c, 409, false, "Variation already exists", null);
+    }
 
-//     const variationIds = variations.map((v) => v.id);
+    const varItem = await db.insert(variation).values({ name });
 
-//     const options =
-//       variationIds.length > 0
-//         ? await db
-//             .select()
-//             .from(variation_option)
-//             .where(inArray(variation_option.variation_id, variationIds))
-//         : [];
+    return sendResponse(c, 201, true, "Variation added successfully", varItem);
+  } catch (error) {
+    return sendResponse(c, 500, false, "Failed to add variation", null, error);
+  }
+};
 
-//     // Map each variation and its options
-//     const variationMap = new Map<
-//       string,
-//       { id: string; name: string; options: { id: string; value: string }[] }
-//     >();
 
-//     variations.forEach((v) => {
-//       variationMap.set(v.id, { id: v.id, name: v.name, options: [] });
-//     });
+export const getVariations = async (c: Context) => {
+  try {
+    const { id } = await c.req.json();
 
-//     options.forEach((opt) => {
-//       const v = variationMap.get(opt.variation_id);
-//       if (v) v.options.push({ id: opt.id, value: opt.value });
-//     });
+    const result = id
+      ? await db.select().from(variation).where(eq(variation.id, id))
+      : await db.select().from(variation);
 
-//     const result = Array.from(variationMap.values());
+    return sendResponse(
+      c,
+      200,
+      true,
+      "Variations fetched successfully",
+      result
+    );
+  } catch (error) {
+    return sendResponse(
+      c,
+      500,
+      false,
+      "Failed to fetch variations",
+      null,
+      error
+    );
+  }
+};
 
-//     return sendResponse(
-//       c,
-//       200,
-//       true,
-//       "Variations fetched successfully",
-//       result
-//     );
-//   } catch (error) {
-//     console.error("[getVariations] Error:", error);
-//     return sendResponse(
-//       c,
-//       500,
-//       false,
-//       "Failed to fetch variations",
-//       null,
-//       error
-//     );
-//   }
-// };
+
+export const updateVariation = async (c: Context) => {
+  try {
+    const { id, name: rawName } = await c.req.json();
+
+    if (!id)
+      return sendResponse(c, 400, false, "Variation ID is required", null);
+    if (!rawName)
+      return sendResponse(c, 400, false, "Variation name is required", null);
+
+    const name = rawName.toUpperCase();
+
+      const duplicate = await db
+          .select()
+          .from(variation)
+          .where(eq(variation.name, name) && ne(variation.id, id));
+    if (duplicate.length > 0) {
+      return sendResponse(c, 409, false, "Variation name already exists", null);
+    }
+
+    const updated = await db
+      .update(variation)
+      .set({ name })
+      .where(eq(variation.id, id));
+
+    if (!updated.count)
+      return sendResponse(c, 404, false, "Variation not found", null);
+
+    return sendResponse(
+      c,
+      200,
+      true,
+      "Variation updated successfully",
+      updated
+    );
+  } catch (error) {
+    return sendResponse(
+      c,
+      500,
+      false,
+      "Failed to update variation",
+      null,
+      error
+    );
+  }
+};
+
+
+export const deleteVariation = async (c: Context) => {
+  try {
+    const { id } = await c.req.json();
+
+    if (!id)
+      return sendResponse(c, 400, false, "Variation ID is required", null);
+
+    const deleted = await db.delete(variation).where(eq(variation.id, id));
+
+    if (!deleted.count)
+      return sendResponse(c, 404, false, "Variation not found", null);
+
+    return sendResponse(
+      c,
+      200,
+      true,
+      "Variation deleted successfully",
+      deleted
+    );
+  } catch (error) {
+    return sendResponse(
+      c,
+      500,
+      false,
+      "Failed to delete variation",
+      null,
+      error
+    );
+  }
+};

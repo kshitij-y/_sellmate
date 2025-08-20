@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { auth } from "@sellmate/auth";
+import { auth } from "@kshitij_npm/sell_auth";
 import { sendResponse } from "./utils/response.js";
 import { userRoutes } from "./routes/user.js";
 import { cartRoutes } from "./routes/cart.js";

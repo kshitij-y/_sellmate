@@ -1,6 +1,6 @@
 {
   "name": "@kshitij_npm/sell_auth",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,9 +9,9 @@
   ],
   "scripts": {
     "build": "tsc"
-  },  
+  },
   "dependencies": {
-    "@sellmate/db": "file:sellmate-db-1.0.0.tgz",
+    "@kshitij_npm/sell_db": "^1.1.0",
     "@types/node": "^24.0.10",
     "better-auth": "^1.2.12",
     "dotenv": "^17.0.1",

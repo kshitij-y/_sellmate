@@ -1,4 +1,4 @@
-import { address, user_address, eq, and, ne, getDb } from "@sellmate/db";
+import { address, user_address, eq, and, ne, getDb } from "@kshitij_npm/sell_db";
 import { Context } from "hono";
 import { sendResponse } from "../utils/response.js";
 import { v4 as uuidv4 } from "uuid";

@@ -6,12 +6,11 @@ import {
   product_image,
   product_item,
   eq,
-} from "@sellmate/db";
+} from "@kshitij_npm/sell_db";
 import type { Context } from "hono";
 import { sendResponse } from "../utils/response";
-import cloudinary from "@sellmate/upload";
-import { getDataUri } from "@sellmate/upload";
-import { v4 as uuid4 } from "uuid";
+import cloudinary from "@kshitij_npm/sell_upload";
+import { getDataUri } from "@kshitij_npm/sell_upload";
 
 const db = getDb();
 
@@ -40,79 +39,137 @@ const getUrl = async (file: File) => {
 export const addProduct = async (c: Context) => {
   try {
     const user = c.get("user");
-    const user_id = user.id;
-    const formData = await c.req.formData();
-
-    const store_id = formData.get("store_id") as string;
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const category_id = formData.get("category_id") as string;
-    const itemsJson = formData.get("items") as string;
-
-    const items: Array<{
-      sku: string;
-      quantity: number;
-      price: string;
-      config: string[];
-      images: Array<{ position: number; fileKey: string }>;
-    }> = JSON.parse(itemsJson);
-
-    const stores = await db.select().from(store).where(eq(store.id, store_id));
-    if (stores.length === 0) {
-      return sendResponse(c, 404, false, "Store not found");
+    if (!user?.id) {
+      return sendResponse(c, 401, false, "User not authenticated");
     }
-    if (stores[0].owner_id !== user_id) {
-      return sendResponse(c, 403, false, "Forbidden: Not the store owner");
-    } // Insert Product and all related data in a transaction
+    const user_id = user.id;
 
-    await db.transaction(async (tx) => {
-      // Insert product
-      const [insertProduct] = await tx
-        .insert(product)
-        .values({
-          name,
-          description,
-          category_id, // Just use as is, it's the id
-          store_id,
-        })
-        .returning(); // For each item (SKU)
+    const { name, description, category_id, store_id } = await c.req.json();
 
-      for (const item of items) {
-        const [insertedItem] = await tx
-          .insert(product_item)
-          .values({
-            product_id: insertProduct.id,
-            sku: item.sku,
-            quantity: item.quantity,
-            price: item.price,
-          })
-          .returning(); // Insert all product_config records for each variation_option
+    if (!name || !description || !category_id || !store_id) {
+      return sendResponse(c, 400, false, "All fields are required");
+    }
 
-        for (const variation_option_id of item.config || []) {
-          await tx.insert(product_config).values({
-            product_item_id: insertedItem.id,
-            variation_option_id,
-          });
-        } // Process images
+    const storeRes = await db
+      .select()
+      .from(store)
+      .where(eq(store.id, store_id) && eq(store.owner_id, user_id));
 
-        for (const image of item.images) {
-          const file = formData.get(image.fileKey);
-          if (!(file instanceof File)) {
-            throw new Error(`Invalid file for key: ${image.fileKey}`);
-          }
-          const imageUrl = await getUrl(file);
-          await tx.insert(product_image).values({
-            product_item_id: insertedItem.id,
-            image_url: imageUrl,
-            position: image.position,
-          });
-        }
-      } // If you wish, you can return the newly created product id: // return insertProduct.id;
+    if (storeRes.length === 0) {
+      return sendResponse(c, 403, false, "Store does not belong to the user");
+    }
+
+    const newProduct = await db.insert(product).values({
+      name,
+      description,
+      category_id,
+      store_id,
     });
 
-    return sendResponse(c, 200, true, "Product added successfully");
+    return sendResponse(c, 201, true, "Product added successfully", newProduct);
   } catch (error) {
     console.error("addProduct error:", error);
-    return sendResponse(c, 500, false, "Internal Server Error");
+    return sendResponse(c, 500, false, "Internal Server Error", null, error);
+  }
+};
+
+export const getProducts = async (c: Context) => {
+  try {
+    const { id } = await c.req.json();
+
+    const products = id
+      ? await db.select().from(product).where(eq(product.id, id))
+      : await db.select().from(product);
+
+    return sendResponse(
+      c,
+      200,
+      true,
+      "Products fetched successfully",
+      products
+    );
+  } catch (error) {
+    console.error("getProducts error:", error);
+    return sendResponse(c, 500, false, "Failed to fetch products", null, error);
+  }
+};
+
+export const updateProduct = async (c: Context) => {
+  try {
+    const user = c.get("user");
+    if (!user?.id) {
+      return sendResponse(c, 401, false, "User not authenticated");
+    }
+    const user_id = user.id;
+
+    const { id, name, description, category_id, store_id } = await c.req.json();
+
+    if (!id || !name || !description || !category_id || !store_id) {
+      return sendResponse(c, 400, false, "All fields are required");
+    }
+
+    // Check if the store belongs to the user
+    const storeRes = await db
+      .select()
+      .from(store)
+      .where(eq(store.id, store_id) && eq(store.owner_id, user_id));
+
+    if (storeRes.length === 0) {
+      return sendResponse(c, 403, false, "Store does not belong to the user");
+    }
+
+    const updated = await db
+      .update(product)
+      .set({
+        name,
+        description,
+        category_id,
+        store_id,
+      })
+      .where(eq(product.id, id));
+
+    if (!updated.count) {
+      return sendResponse(c, 404, false, "Product not found", null);
+    }
+
+    return sendResponse(c, 200, true, "Product updated successfully", updated);
+  } catch (error) {
+    console.error("updateProduct error:", error);
+    return sendResponse(c, 500, false, "Failed to update product", null, error);
+  }
+};
+
+export const deleteProduct = async (c: Context) => {
+  try {
+    const user = c.get("user");
+    if (!user?.id) {
+      return sendResponse(c, 401, false, "User not authenticated");
+    }
+    const user_id = user.id;
+
+    const { id } = await c.req.json();
+    if (!id) return sendResponse(c, 400, false, "Product ID is required");
+
+    const prodRes = await db.select().from(product).where(eq(product.id, id));
+    if (prodRes.length === 0) {
+      return sendResponse(c, 404, false, "Product not found");
+    }
+
+    const productItem = prodRes[0];
+
+    const storeRes = await db
+      .select()
+      .from(store)
+      .where(eq(store.id, productItem.store_id));
+    if (storeRes.length === 0 || storeRes[0].owner_id !== user_id) {
+      return sendResponse(c, 403, false, "You do not own this store/product");
+    }
+
+    const deleted = await db.delete(product).where(eq(product.id, id));
+
+    return sendResponse(c, 200, true, "Product deleted successfully", deleted);
+  } catch (error) {
+    console.error("deleteProduct error:", error);
+    return sendResponse(c, 500, false, "Failed to delete product", null, error);
   }
 };

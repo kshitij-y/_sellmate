@@ -4,8 +4,8 @@ import {
   and,
   wishlist,
   wishlist_item,
-  product_item
-} from "@sellmate/db";
+  product_item,
+} from "@kshitij_npm/sell_db";
 
 import { Context } from "hono";
 import { sendResponse } from "../utils/response";

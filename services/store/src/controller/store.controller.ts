@@ -1,8 +1,8 @@
 import type { Context } from "hono";
 import { getDb, store, eq } from "@sellmate/db";
 import { sendResponse } from "../utils/response.js";
-import cloudinary  from '@sellmate/upload';
-import { getDataUri } from '@sellmate/upload';
+import cloudinary from "@kshitij_npm/sell_upload";
+import { getDataUri } from "@kshitij_npm/sell_upload";
 const db = getDb();
 
 

@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@hono/node-server": "1.15.0",
-    "@sellmate/auth": "file:./packages/auth",
-    "@sellmate/db": "file:./packages/db",
+    "@kshitij_npm/sell_auth": "^1.1.0",
+    "@kshitij_npm/sell_db": "^1.1.0",
     "better-auth": "^1.2.12",
     "dotenv": "^17.0.1",
     "drizzle-orm": "^0.44.2",
