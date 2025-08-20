@@ -1,5 +1,5 @@
 {
-  "name": "@sellmate/auth",
+  "name": "@kshitij_npm/sell_auth",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/index.js",
@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc"
-  },
+  },  
   "dependencies": {
     "@sellmate/db": "file:sellmate-db-1.0.0.tgz",
     "@types/node": "^24.0.10",
