@@ -18,5 +18,8 @@
     "cloudinary": "^2.7.0",
     "datauri": "^4.1.0",
     "dotenv": "^17.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
