@@ -1,10 +1,12 @@
 {
-  "name": "@sellmate/db",
+  "name": "@kshitij_npm/sell_db",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
-  "files": ["dist" ],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc"
   },
