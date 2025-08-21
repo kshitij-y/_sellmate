@@ -36,7 +36,7 @@ export const addVariationOption = async (c: Context) => {
 
     const option = await db
       .insert(variation_option)
-      .values({ variation_id, value });
+      .values({ variation_id, value }).returning();
 
     return sendResponse(
       c,
@@ -115,15 +115,14 @@ export const deleteVariationOption = async (c: Context) => {
       .delete(variation_option)
       .where(eq(variation_option.id, id));
 
-    if (!deleted.count)
+    if (!deleted || deleted.count === 0)
       return sendResponse(c, 404, false, "Variation option not found", null);
 
     return sendResponse(
       c,
       200,
       true,
-      "Variation option deleted successfully",
-      deleted
+      "Variation option deleted successfully"
     );
   } catch (error) {
     return sendResponse(

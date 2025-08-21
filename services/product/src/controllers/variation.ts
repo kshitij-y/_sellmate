@@ -23,7 +23,7 @@ export const addVariation = async (c: Context) => {
       return sendResponse(c, 409, false, "Variation already exists", null);
     }
 
-    const varItem = await db.insert(variation).values({ name });
+    const varItem = await db.insert(variation).values({ name }).returning();
 
     return sendResponse(c, 201, true, "Variation added successfully", varItem);
   } catch (error) {

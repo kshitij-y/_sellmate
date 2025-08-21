@@ -64,7 +64,7 @@ export const addProduct = async (c: Context) => {
       description,
       category_id,
       store_id,
-    });
+    }).returning();
 
     return sendResponse(c, 201, true, "Product added successfully", newProduct);
   } catch (error) {

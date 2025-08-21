@@ -70,7 +70,7 @@ export const addCategories = async (c: Context) => {
     const cat = await db.insert(category).values({
       parent_cat_id,
       cat_name,
-    });
+    }).returning();
 
     return sendResponse(c, 201, true, "Category added successfully", cat);
   } catch (error) {

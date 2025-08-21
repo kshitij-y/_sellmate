@@ -7,9 +7,19 @@ import catRouter from "./routes/categories.js";
 import varRouter from "./routes/variation.js";
 import varOptRouter from "./routes/varOptions.js";
 
+import {
+  addProduct,
+  getProducts,
+  updateProduct,
+  deleteProduct,
+} from "./controllers/product.js";
 
-import { addProduct, getProducts, updateProduct, deleteProduct } from "./controllers/product.js";
-import { addProductItem, deleteProductItem, getProductItem, updateProductItem } from "./controllers/product_item.js";
+import {
+  addProductItem,
+  deleteProductItem,
+  getProductItem,
+  patchProductItem,
+} from "./controllers/product_item.js";
 
 const app = new Hono();
 app.use("*", async (c, next) => {
@@ -37,9 +47,7 @@ app.put("/product", updateProduct);
 app.get("/proItem", getProductItem);
 app.post("/proItem", addProductItem);
 app.delete("/proItem", deleteProductItem);
-app.put("/proItem", updateProductItem);
-
-
+app.patch("/proItem", patchProductItem);
 
 const port = Number(process.env.PORT);
 console.log(`[product] service running on http://localhost:${port}`);

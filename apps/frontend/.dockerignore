@@ -1,0 +1,11 @@
+# Node modules and lockfiles
+node_modules
+*.log
+.next/chache
+
+# Local env and config
+
+
+# Docker-specific
+Dockerfile*
+.dockerignore
