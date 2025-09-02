@@ -113,26 +113,7 @@ export const getProductItem = async (c: Context) => {
     const { product_id, id } = await c.req.json();
 
     let query = sql`
-      SELECT 
-        pi.*, 
-        json_agg(DISTINCT jsonb_build_object(
-          'id', vo.id,
-          'variation', v.name,
-          'value', vo.value
-        )) FILTER (WHERE vo.id IS NOT NULL) AS variations,
-        json_agg(DISTINCT jsonb_build_object(
-          'id', img.id,
-          'image_url', img.image_url,
-          'position', img.position
-        )) FILTER (WHERE img.id IS NOT NULL) AS images
-      FROM ${product_item} pi
-      JOIN ${product} p ON pi.product_id = p.id
-      JOIN ${store} s ON p.store_id = s.id
-      LEFT JOIN ${product_config} pc ON pi.id = pc.product_item_id
-      LEFT JOIN ${variation_option} vo ON pc.variation_option_id = vo.id
-      LEFT JOIN ${variation} v ON vo.variation_id = v.id
-      LEFT JOIN ${product_image} img ON pi.id = img.product_item_id
-      WHERE s.owner_id = ${user.id}
+      
     `;
 
     if (id) query = sql`${query} AND pi.id = ${id}`;
