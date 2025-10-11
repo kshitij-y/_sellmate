@@ -1,11 +1,28 @@
 import { Hono } from "hono";
 import {
-  getUserProfile,
-  updateUserProfile,
+    getFullUserProfile,
+    // addUserProfile,
+    // updateUser,
+    // updateUserProfile,
+    updateUserAndProfile,
+    getUserAddress,
 } from "../controllers/profile.js";
 
 const profileRouter = new Hono();
 
-profileRouter.get("/", getUserProfile);
-profileRouter.patch("/update", updateUserProfile);
+// Get full user + profile info
+profileRouter.get("/", getFullUserProfile);
+
+// Create user profile
+// profileRouter.post("/", addUserProfile);
+
+// Update basic user info (name, image)
+profileRouter.patch("/update", updateUserAndProfile);
+
+// Update user profile info (phone, address)
+// profileRouter.patch("/profile", updateUserProfile);
+
+//just to get address
+profileRouter.get("/address", getUserAddress);
+
 export default profileRouter;

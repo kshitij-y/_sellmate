@@ -1,87 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface CartItem {
-  product_id: string;
-  title: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
-
 interface CartState {
-  items: CartItem[];
-  loading: boolean;
-  error: string | null;
+  items: { id: string; name: string; quantity: number; price: number }[];
 }
 
-const initialState: CartState = {
-  items: [],
-  loading: false,
-  error: null,
-};
+const initialState: CartState = { items: [] };
 
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    setCart: (state, action: PayloadAction<CartItem[]>) => {
-      state.items = action.payload;
-      state.loading = false;
-      state.error = null;
+    setCart: (state, action: PayloadAction<CartState>) => {
+      state.items = action.payload.items;
     },
-    addToCart: (state, action: PayloadAction<CartItem>) => {
-      state.loading = true;
-      const existingItem = state.items.find(
-        (item) => item.product_id === action.payload.product_id
-      );
-      if (existingItem) {
-        existingItem.quantity += action.payload.quantity;
-      } else {
-        state.items.push(action.payload);
-      }
-      state.loading = false;
+    addItem: (state, action: PayloadAction<CartState["items"][0]>) => {
+      state.items.push(action.payload);
     },
-    updateCartQuantity: (
-      state,
-      action: PayloadAction<{ product_id: string; quantity: number }>
-    ) => {
-      state.loading = true;
-      const item = state.items.find(
-        (item) => item.product_id === action.payload.product_id
-      );
-      if (item) {
-        item.quantity = action.payload.quantity;
-      }
-      state.loading = false;
-    },
-    removeFromCart: (state, action: PayloadAction<string>) => {
-      state.loading = true;
-      state.items = state.items.filter(
-        (item) => item.product_id !== action.payload
-      );
-      state.loading = false;
+    removeItem: (state, action: PayloadAction<string>) => {
+      state.items = state.items.filter((item) => item.id !== action.payload);
     },
     clearCart: (state) => {
-      state.loading = true;
       state.items = [];
-      state.loading = false;
-    },
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload;
-    },
-    setError: (state, action: PayloadAction<string | null>) => {
-      state.error = action.payload;
     },
   },
 });
 
-export const {
-  setCart,
-  addToCart,
-  updateCartQuantity,
-  removeFromCart,
-  clearCart,
-  setLoading,
-  setError,
-} = cartSlice.actions;
+export const { setCart, addItem, removeItem, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;

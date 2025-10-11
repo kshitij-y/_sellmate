@@ -37,7 +37,7 @@ app.get("/", (c) => {
 });
 
 
-app.route("/address", address);
+// app.route("/address", address);
 app.route("/profile", profileRouter);
 
 

@@ -1,210 +1,263 @@
-import { getDb, eq, and, cart, cart_items, product_item } from "@kshitij_npm/sell_db";
+import {
+  getDb,
+  cart,
+  cartItems,
+  storeProducts,
+  eq,
+} from "@kshitij_npm/sell_db";
+import { sendResponse } from "../utils/response.js";
 import { Context } from "hono";
-import { sendResponse } from "../utils/response";
-import { v4 as uuidv4 } from "uuid";
 
 const db = getDb();
 
 export const getCart = async (c: Context) => {
   try {
-    const user = c.get("user");
-    if (!user) {
-      return sendResponse(c, 401, false, "Unauthorized: User not found");
-    }
+    const authUser = c.get("user");
+    if (!authUser) return sendResponse(c, 401, false, "Unauthorized");
 
-    const userId = user.id;
+    const userId = authUser.id;
 
-    const userCart = await db
-      .select()
-      .from(cart)
-      .where(eq(cart.user_id, userId))
-      .limit(1);
-    if (userCart.length === 0)
-      return sendResponse(c, 200, true, "Cart is empty", null);
-
-    const items = await db
-      .select({
-        id: cart_items.id,
-        quantity: cart_items.quantity,
-        sku: product_item.sku,
-        price: product_item.price,
-      })
-      .from(cart_items)
-      .leftJoin(product_item, eq(cart_items.product_item_id, product_item.id))
-      .where(eq(cart_items.cart_id, userCart[0].id));
-
-    return sendResponse(c, 200, true, "Cart fetched successfully", {
-      cart: userCart[0],
-      items,
-    });
-  } catch (error) {
-    return sendResponse(c, 500, false, "Failed to fetch cart", null, error);
-  }
-};
-
-export const addItemToCart = async (c: Context) => {
-  try {
-    const user = c.get("user");
-    if (!user) {
-      return sendResponse(c, 401, false, "Unauthorized: User not found");
-    }
-
-    const userId = user.id;
-
-    const { product_item_id, quantity } = await c.req.json();
-    if (!product_item_id || !quantity || quantity <= 0)
-      return sendResponse(c, 400, false, "Invalid input");
-
+    // Step 1: Check if cart exists
     let userCart = await db
       .select()
       .from(cart)
-      .where(eq(cart.user_id, userId))
+      .where(eq(cart.userId, userId))
       .limit(1);
-    let cartId: string;
-    if (userCart.length === 0) {
-      cartId = uuidv4();
-      await db.insert(cart).values({ id: cartId, user_id: userId });
-    } else {
-      cartId = userCart[0].id;
+
+    // Step 2: Create cart if not found
+    if (!userCart.length) {
+      const [newCart] = await db
+        .insert(cart)
+        .values({
+          id: crypto.randomUUID(),
+          userId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+      userCart = [newCart];
     }
 
+    const cartId = userCart[0].id;
+
+    // Step 3: Join cartItems with storeProducts using Drizzle
+    const items = await db
+      .select({
+        id: cartItems.id,
+        quantity: cartItems.quantity,
+        price: cartItems.price,
+        name: storeProducts.name,
+        images: storeProducts.images,
+        category: storeProducts.category,
+      })
+      .from(cartItems)
+      .innerJoin(storeProducts, eq(cartItems.storeProductId, storeProducts.id))
+      .where(eq(cartItems.cartId, cartId));
+
+    return sendResponse(c, 200, true, "Cart fetched successfully", {
+      cartId,
+      items,
+    });
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    return sendResponse(c, 500, false, "Failed to fetch cart");
+  }
+};
+
+export const addToCart = async (c: Context) => {
+  try {
+    const authUser = c.get("user");
+    if (!authUser) return sendResponse(c, 401, false, "Unauthorized");
+
+    const userId = authUser.id;
+    const body = await c.req.json();
+    const { storeProductId, quantity = 1 } = body;
+
+    if (!storeProductId)
+      return sendResponse(c, 400, false, "storeProductId is required");
+
+    // Step 1: Ensure the user has a cart
+    let userCart = await db
+      .select()
+      .from(cart)
+      .where(eq(cart.userId, userId))
+      .limit(1);
+
+    if (!userCart.length) {
+      const [newCart] = await db
+        .insert(cart)
+        .values({
+          id: crypto.randomUUID(),
+          userId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+      userCart = [newCart];
+    }
+
+    const cartId = userCart[0].id;
+
+    // Step 2: Check if the product is already in the cart
     const existingItem = await db
       .select()
-      .from(cart_items)
+      .from(cartItems)
       .where(
-        and(
-          eq(cart_items.cart_id, cartId),
-          eq(cart_items.product_item_id, product_item_id)
-        )
+        eq(cartItems.cartId, cartId) &&
+        eq(cartItems.storeProductId, storeProductId)
       )
       .limit(1);
 
-    if (existingItem.length > 0) {
-      await db
-        .update(cart_items)
-        .set({ quantity: existingItem[0].quantity + quantity })
-        .where(eq(cart_items.id, existingItem[0].id));
+    if (existingItem.length) {
+      // Increment quantity
+      const updatedItem = await db
+        .update(cartItems)
+        .set({
+          quantity: existingItem[0].quantity + quantity,
+          updatedAt: new Date(),
+        })
+        .where(eq(cartItems.id, existingItem[0].id))
+        .returning();
+
+      return sendResponse(c, 200, true, "Cart item updated", updatedItem[0]);
     } else {
-      await db.insert(cart_items).values({
-        id: uuidv4(),
-        cart_id: cartId,
-        product_item_id,
-        quantity,
-      });
-    }
+      // Step 3: Get price from storeProducts
+      const product = await db
+        .select({ price: storeProducts.price })
+        .from(storeProducts)
+        .where(eq(storeProducts.id, storeProductId))
+        .limit(1);
 
-    return sendResponse(c, 200, true, "Item added to cart");
+      if (!product.length)
+        return sendResponse(c, 404, false, "Product not found");
+
+      // Step 4: Add new item to cart
+      const [newItem] = await db
+        .insert(cartItems)
+        .values({
+          id: crypto.randomUUID(),
+          cartId,
+          storeProductId,
+          quantity,
+          price: product[0].price,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+
+      return sendResponse(c, 201, true, "Product added to cart", newItem);
+    }
   } catch (error) {
-    return sendResponse(
-      c,
-      500,
-      false,
-      "Failed to add item to cart",
-      null,
-      error
-    );
+    console.error("Error adding to cart:", error);
+    return sendResponse(c, 500, false, "Failed to add to cart");
   }
 };
 
-export const removeItemFromCart = async (c: Context) => {
+export const updateCartItem = async (c: Context) => {
   try {
-    const user = c.get("user");
-    if (!user) {
-      return sendResponse(c, 401, false, "Unauthorized: User not found");
-    }
+    const authUser = c.get("user");
+    if (!authUser) return sendResponse(c, 401, false, "Unauthorized");
 
-    const userId = user.id;
+    const userId = authUser.id;
+    const itemId = c.req.param("itemId");
+    const body = await c.req.json();
+    const { quantity, price } = body;
 
-    const { cart_item_id } = await c.req.json();
-    if (!cart_item_id)
-      return sendResponse(c, 400, false, "Missing cart_item_id");
+    if (quantity === undefined && price === undefined)
+      return sendResponse(c, 400, false, "Nothing to update");
 
-    const userCart = await db
-      .select()
-      .from(cart)
-      .where(eq(cart.user_id, userId))
-      .limit(1);
-    if (userCart.length === 0) {
-      return sendResponse(c, 404, false, "Cart not found");
-    }
+    // Step 1: Verify the item belongs to the user's cart
     const item = await db
-      .select()
-      .from(cart_items)
-      .where(
-        and(
-          eq(cart_items.id, cart_item_id),
-          eq(cart_items.cart_id, userCart[0].id)
-        )
-      )
+      .select({
+        id: cartItems.id,
+        cartId: cartItems.cartId,
+      })
+      .from(cartItems)
+      .innerJoin(cart, eq(cartItems.cartId, cart.id))
+      .where(eq(cartItems.id, itemId) && eq(cart.userId, userId))
       .limit(1);
 
-    if (item.length === 0)
-      return sendResponse(c, 404, false, "Cart item not found");
+    if (!item.length) return sendResponse(c, 404, false, "Cart item not found");
 
-    await db.delete(cart_items).where(eq(cart_items.id, cart_item_id));
+    // Step 2: Update the item
+    const [updatedItem] = await db
+      .update(cartItems)
+      .set({
+        ...(quantity !== undefined && { quantity }),
+        ...(price !== undefined && { price }),
+        updatedAt: new Date(),
+      })
+      .where(eq(cartItems.id, itemId))
+      .returning();
 
-    return sendResponse(c, 200, true, "Item removed from cart");
+    return sendResponse(c, 200, true, "Cart item updated", updatedItem);
   } catch (error) {
-    return sendResponse(
-      c,
-      500,
-      false,
-      "Failed to remove item from cart",
-      null,
-      error
-    );
+    console.error("Error updating cart item:", error);
+    return sendResponse(c, 500, false, "Failed to update cart item");
   }
 };
 
-export const updateCartItemQuantity = async (c: Context) => {
+export const removeCartItem = async (c: Context) => {
   try {
-    const user = c.get("user");
-    if (!user) {
-      return sendResponse(c, 401, false, "Unauthorized: User not found");
-    }
+    const authUser = c.get("user");
+    if (!authUser) return sendResponse(c, 401, false, "Unauthorized");
 
-    const userId = user.id;
+    const userId = authUser.id;
+    const itemId = c.req.param("itemId");
 
-    const { cart_item_id, quantity } = await c.req.json();
-    if (!cart_item_id || !quantity || quantity <= 0)
-      return sendResponse(c, 400, false, "Invalid input");
+    // Step 1: Verify item belongs to user's cart
+    const item = await db
+      .select({
+        id: cartItems.id,
+      })
+      .from(cartItems)
+      .innerJoin(cart, eq(cartItems.cartId, cart.id))
+      .where(eq(cartItems.id, itemId) && eq(cart.userId, userId))
+      .limit(1);
 
+    if (!item.length) return sendResponse(c, 404, false, "Cart item not found");
+
+    // Step 2: Delete the cart item
+    await db.delete(cartItems).where(eq(cartItems.id, itemId));
+
+    return sendResponse(c, 200, true, "Cart item removed successfully");
+  } catch (error) {
+    console.error("Error removing cart item:", error);
+    return sendResponse(c, 500, false, "Failed to remove cart item");
+  }
+};
+
+export const clearCart = async (c: Context) => {
+  try {
+    const authUser = c.get("user");
+    if (!authUser) return sendResponse(c, 401, false, "Unauthorized");
+
+    const userId = authUser.id;
+
+    // Step 1: Get user's cart
     const userCart = await db
       .select()
       .from(cart)
-      .where(eq(cart.user_id, userId))
-      .limit(1);
-    if (userCart.length === 0)
-      return sendResponse(c, 404, false, "Cart not found");
-
-    const item = await db
-      .select()
-      .from(cart_items)
-      .where(
-        and(
-          eq(cart_items.id, cart_item_id),
-          eq(cart_items.cart_id, userCart[0].id)
-        )
-      )
+      .where(eq(cart.userId, userId))
       .limit(1);
 
-    if (item.length === 0)
-      return sendResponse(c, 404, false, "Cart item not found");
+    if (!userCart.length) {
+      // Cart doesn't exist — nothing to clear
+      return sendResponse(c, 200, true, "Cart cleared", { itemsCleared: 0 });
+    }
 
-    await db
-      .update(cart_items)
-      .set({ quantity })
-      .where(eq(cart_items.id, cart_item_id));
+    const cartId = userCart[0].id;
 
-    return sendResponse(c, 200, true, "Quantity updated");
+    // Step 2: Delete all cart items
+    const deletedCount = await db
+      .delete(cartItems)
+      .where(eq(cartItems.cartId, cartId));
+
+    return sendResponse(c, 200, true, "Cart cleared successfully", {
+      itemsCleared: deletedCount,
+    });
   } catch (error) {
-    return sendResponse(
-      c,
-      500,
-      false,
-      "Failed to update quantity",
-      null,
-      error
-    );
+    console.error("Error clearing cart:", error);
+    return sendResponse(c, 500, false, "Failed to clear cart");
   }
 };

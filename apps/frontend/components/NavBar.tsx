@@ -1,16 +1,16 @@
 "use client"
-import useAddress from "@/lib/hooks/useAddress";
 import { Logo } from "./Logo";
 import { AppSidebar } from "./SideBar";
 import { ModeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { MapPin } from "lucide-react";
+import { useUserProfile } from "@/lib/hooks/useProfile";
 
 export default function NavBar() {
-  const { getDefaultAddress } = useAddress();
-  const address = getDefaultAddress();
-  const location = address?.city;
+  const { user } = useUserProfile();
+  const location = user?.address?.city;
+
 
   return (
     <div className="flex items-center justify-between w-full px-3 py-2 bg-background shadow-sm border-b-1">

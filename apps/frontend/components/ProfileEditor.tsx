@@ -12,10 +12,10 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { useProfile } from "@/lib/hooks/useProfile";
+import { useUserProfile } from "@/lib/hooks/useProfile";
 
 export default function ProfileEditor() {
-  const { user, updateUserProfile } = useProfile();
+  const { user, updateProfile  } = useUserProfile();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userForm, setUserForm] = useState({
@@ -40,7 +40,7 @@ export default function ProfileEditor() {
   const handleSave = async () => {
     try {
       setLoading(true);
-      await updateUserProfile(userForm);
+      await updateProfile (userForm);
       setOpen(false);
     } catch (error) {
       console.error("Failed to update profile:", error);

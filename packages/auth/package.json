@@ -5,13 +5,12 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist/**/*"
   ],
   "scripts": {
     "build": "tsc"
   },
   "dependencies": {
-    "@kshitij_npm/sell_db": "^1.1.0",
     "@types/node": "^24.0.10",
     "better-auth": "^1.2.12",
     "dotenv": "^17.0.1",

@@ -3,23 +3,11 @@ import { serve } from "@hono/node-server";
 import "dotenv/config";
 import { authMiddleware } from "./utils/authMiddleware.js";
 
-import catRouter from "./routes/categories.js";
-import varRouter from "./routes/variation.js";
-import varOptRouter from "./routes/varOptions.js";
+// import catRouter from "./routes/categories.js";
+// import varRouter from "./routes/variation.js";
+import storeRouter from "./routes/store.js";
+import listingRouter from "./routes/list.js";
 
-import {
-  addProduct,
-  getProducts,
-  updateProduct,
-  deleteProduct,
-} from "./controllers/product.js";
-
-import {
-  addProductItem,
-  deleteProductItem,
-  getProductItem,
-  patchProductItem,
-} from "./controllers/product_item.js";
 
 const app = new Hono();
 app.use("*", async (c, next) => {
@@ -34,20 +22,12 @@ app.get("/h", (c) => {
   return c.text("Hello from the product service!");
 });
 
-app.route("/categoires", catRouter);
-app.route("/variations", varRouter);
-app.route("/varOption", varOptRouter);
 
-//product routes
-app.get("/product", getProducts);
-app.post("/product", addProduct);
-app.delete("/product", deleteProduct);
-app.put("/product", updateProduct);
 
-app.get("/proItem", getProductItem);
-app.post("/proItem", addProductItem);
-app.delete("/proItem", deleteProductItem);
-app.patch("/proItem", patchProductItem);
+
+//updated
+app.route("/listings", listingRouter);
+app.route("/store", storeRouter)
 
 const port = Number(process.env.PORT);
 console.log(`[product] service running on http://localhost:${port}`);

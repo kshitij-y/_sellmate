@@ -2,12 +2,7 @@ import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import "dotenv/config";
 import { authMiddleware } from "./utils/authMiddleware.js";
-import {
-  getCart,
-  addItemToCart,
-  removeItemFromCart,
-  updateCartItemQuantity,
-} from "./controllers/cart.js";
+import  cartRouter  from "./routes/cart.js"
 
 const app = new Hono();
 app.use("*", async (c, next) => {
@@ -22,10 +17,11 @@ app.get("/", (c) => {
   return c.text("Hello from the cart service!");
 });
 
-app.get("/getCart", getCart);
-app.post("/addItem", addItemToCart);
-app.delete("/removeItem", removeItemFromCart);
-app.put("/updateItem", updateCartItemQuantity);
+//cart
+app.route("/cart", cartRouter);
+
+//order
+
 
 const port = Number(process.env.PORT);
 console.log(`[cart] service running on http://localhost:${port}`);

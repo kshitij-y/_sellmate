@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
-    "@kshitij_npm/sell_auth": "^1.1.0",
-    "@kshitij_npm/sell_db": "^1.1.0",
+    "@kshitij_npm/sell_db": "file:../../packages/kshitij_npm-sell_db-1.1.0.tgz",
+    "@kshitij_npm/sell_auth": "file:../../packages/kshitij_npm-sell_auth-1.1.0.tgz",
     "@kshitij_npm/sell_upload": "^1.1.0",
     "dotenv": "^17.0.1",
     "hono": "^4.7.4",
