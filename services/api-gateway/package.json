@@ -11,6 +11,7 @@
   "dependencies": {
     "@hono/node-server": "^1.13.8",
     "@supabase/postgrest-js": "^1.19.3",
+    "@kshitij_npm/sell_auth": "file:../../packages/auth",
     "better-auth": "^1.2.12",
     "dotenv": "^17.0.1",
     "drizzle-orm": "^0.44.2",
