@@ -10,7 +10,7 @@ export const API_URL = BE_URL || "http://localhost:3000";
 // Axios instance
 // --------------------
 const axiosInstance = axios.create({
-    baseURL: API_URL,
+    baseURL: "/api",
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
