@@ -10,7 +10,6 @@ async function proxy(req: NextRequest) {
     const destUrl = `${API_GATEWAY_URL}/api${path}${url.search}`;
 
     const headers = new Headers(req.headers);
-    headers.set("host", new URL(API_GATEWAY_URL).host);
 
     const body = ["POST", "PATCH", "PUT", "DELETE"].includes(req.method)
         ? await req.text()
@@ -28,7 +27,15 @@ async function proxy(req: NextRequest) {
     resHeaders.delete("transfer-encoding");
     resHeaders.delete("content-length");
 
-    return new NextResponse(response.body, {
+    // Forward Set-Cookie
+    const setCookie = response.headers.get("set-cookie");
+    if (setCookie) {
+        resHeaders.set("set-cookie", setCookie);
+    }
+
+    const data = await response.arrayBuffer();
+
+    return new NextResponse(data, {
         status: response.status,
         headers: resHeaders,
     });
