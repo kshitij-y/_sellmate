@@ -113,12 +113,12 @@ export const useUserProfile = () => {
         success: boolean;
         message: string;
         data: User;
-    }>("userProfile", "/api/user/profile");
+    }>("userProfile", "/user/profile");
 
     const updateProfile = useMutationApi<
         { success: boolean; message: string; data: User },
         Partial<User>
-    >("/api/user/profile/update", "patch");
+    >("/user/profile/update", "patch");
 
     // Move dispatch calls inside useEffect
     useEffect(() => {
