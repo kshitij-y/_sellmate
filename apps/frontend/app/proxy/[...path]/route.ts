@@ -12,8 +12,8 @@ function headersToObject(h: Headers) {
 
 async function proxy(req: NextRequest) {
     const url = new URL(req.url);
-    const path = url.pathname.replace(/^\/api/, "");
-    const destUrl = `${API_GATEWAY_URL}/api${path}${url.search}`;
+    const path = url.pathname.replace(/^\/proxy/, "");
+    const destUrl = `${API_GATEWAY_URL}${path}${url.search}`;
 
     // Read request headers and cookie
     const reqHeaders = new Headers(req.headers);

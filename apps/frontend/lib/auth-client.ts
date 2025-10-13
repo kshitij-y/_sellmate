@@ -4,6 +4,7 @@ const FE_URL = process.env.NEXT_PUBLIC_FE_URL || "http://ec2-13-61-14-231.eu-nor
 const BE_URL = process.env.NEXT_PUBLIC_BE_URL || "http://ec2-13-61-14-231.eu-north-1.compute.amazonaws.com:3002";
 
 export const authClient = createAuthClient({
-    baseURL: `${FE_URL}/api/auth/`, // the base url of your auth server
+    baseURL: `${BE_URL}/api/auth/`, // the base url of your auth server
+    // baseURL: "http://localhost:3000/api/auth/",
 });
 export const { signIn, signUp, useSession, signOut } = authClient;
