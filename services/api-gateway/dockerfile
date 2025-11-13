@@ -3,9 +3,9 @@ FROM node:24-alpine AS builder
 WORKDIR /api
 
 COPY package*.json ./
-COPY sellmate-*.tgz ./
+COPY *.tgz ./
 
-RUN npm install ./sellmate-db-1.0.0.tgz ./sellmate-auth-1.0.0.tgz && npm install
+RUN npm install ./kshitij_npm-sell_db-1.1.0.tgz ./kshitij_npm-sell_auth-1.1.0.tgz && npm install
 
 COPY . .
 

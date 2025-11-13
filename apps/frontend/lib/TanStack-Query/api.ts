@@ -10,7 +10,7 @@ export const API_URL = BE_URL || "http://localhost:3000";
 // Axios instance
 // --------------------
 const axiosInstance = axios.create({
-    baseURL: "/proxy",
+    baseURL: API_URL,
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",

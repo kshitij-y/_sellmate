@@ -6,6 +6,7 @@ import {
   updateListing,
   deleteListing,
 } from "../controllers/list.js";
+import { orderListing } from "../controllers/orderListing.js";
 
 
 
@@ -25,5 +26,8 @@ listingRouter.patch("/:id", updateListing);
 
 // Delete a listing by ID
 listingRouter.delete("/:id", deleteListing);
+
+// Order a listing (buy now)
+listingRouter.post("/:id/order", orderListing);
 
 export default listingRouter;

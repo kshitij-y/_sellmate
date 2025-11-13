@@ -7,8 +7,6 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@kshitij_npm/sell_db": "file:../../packages/kshitij_npm-sell_db-1.1.0.tgz",
-    "@kshitij_npm/sell_auth": "file:../../packages/kshitij_npm-sell_auth-1.1.0.tgz",
     "dotenv": "^16.3.1",
     "hono": "^3.11.7"
   },

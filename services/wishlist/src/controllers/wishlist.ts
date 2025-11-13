@@ -65,6 +65,15 @@ export const addItem = async (c: Context) => {
     if (!product_item_id || !quantity || quantity <= 0)
       return sendResponse(c, 400, false, "Invalid input");
 
+    // ensure the product item exists
+    const productItem = await db
+      .select()
+      .from(product_item)
+      .where(eq(product_item.id, product_item_id))
+      .limit(1);
+    if (productItem.length === 0)
+      return sendResponse(c, 404, false, "Product item not found");
+
     let userWishlist = await db
       .select()
       .from(wishlist)
@@ -92,10 +101,16 @@ export const addItem = async (c: Context) => {
 
     if (existingItem.length > 0) {
       // Update quantity (optional, based on your app logic)
+      const newQuantity = existingItem[0].quantity + quantity;
       await db
         .update(wishlist_item)
-        .set({ quantity: existingItem[0].quantity + quantity })
-        .where(eq(wishlist_item.id, existingItem[0].id));
+        .set({ quantity: newQuantity })
+        .where(
+          and(
+            eq(wishlist_item.id, existingItem[0].id),
+            eq(wishlist_item.wishlist_id, wishlistId)
+          )
+        );
     } else {
       await db.insert(wishlist_item).values({
         id: uuidv4(),
@@ -155,7 +170,12 @@ export const removeItem = async (c: Context) => {
 
     await db
       .delete(wishlist_item)
-      .where(eq(wishlist_item.id, wishlist_item_id));
+      .where(
+        and(
+          eq(wishlist_item.id, wishlist_item_id),
+          eq(wishlist_item.wishlist_id, userWishlist[0].id)
+        )
+      );
 
     return sendResponse(c, 200, true, "Item removed from wishlist");
   } catch (error) {
@@ -208,7 +228,12 @@ export const updateItem = async (c: Context) => {
     await db
       .update(wishlist_item)
       .set({ quantity })
-      .where(eq(wishlist_item.id, wishlist_item_id));
+      .where(
+        and(
+          eq(wishlist_item.id, wishlist_item_id),
+          eq(wishlist_item.wishlist_id, userWishlist[0].id)
+        )
+      );
 
     return sendResponse(c, 200, true, "Quantity updated");
   } catch (error) {

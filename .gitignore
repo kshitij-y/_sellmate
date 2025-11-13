@@ -35,3 +35,6 @@ Thumbs.db
 
 # Turbo
 .turbo/
+.github/
+# Local-only backend status (private notes)
+BACKEND_STATUS.txt

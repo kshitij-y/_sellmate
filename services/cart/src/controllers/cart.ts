@@ -4,9 +4,11 @@ import {
   cartItems,
   storeProducts,
   eq,
+  and,
 } from "@kshitij_npm/sell_db";
 import { sendResponse } from "../utils/response.js";
 import { Context } from "hono";
+import crypto from "crypto";
 
 const db = getDb();
 
@@ -102,10 +104,7 @@ export const addToCart = async (c: Context) => {
     const existingItem = await db
       .select()
       .from(cartItems)
-      .where(
-        eq(cartItems.cartId, cartId) &&
-        eq(cartItems.storeProductId, storeProductId)
-      )
+      .where(and(eq(cartItems.cartId, cartId), eq(cartItems.storeProductId, storeProductId)))
       .limit(1);
 
     if (existingItem.length) {
@@ -174,7 +173,7 @@ export const updateCartItem = async (c: Context) => {
       })
       .from(cartItems)
       .innerJoin(cart, eq(cartItems.cartId, cart.id))
-      .where(eq(cartItems.id, itemId) && eq(cart.userId, userId))
+      .where(and(eq(cartItems.id, itemId), eq(cart.userId, userId)))
       .limit(1);
 
     if (!item.length) return sendResponse(c, 404, false, "Cart item not found");
@@ -183,8 +182,8 @@ export const updateCartItem = async (c: Context) => {
     const [updatedItem] = await db
       .update(cartItems)
       .set({
-        ...(quantity !== undefined && { quantity }),
-        ...(price !== undefined && { price }),
+        ...(quantity !== undefined ? { quantity } : {}),
+        ...(price !== undefined ? { price } : {}),
         updatedAt: new Date(),
       })
       .where(eq(cartItems.id, itemId))
@@ -212,7 +211,7 @@ export const removeCartItem = async (c: Context) => {
       })
       .from(cartItems)
       .innerJoin(cart, eq(cartItems.cartId, cart.id))
-      .where(eq(cartItems.id, itemId) && eq(cart.userId, userId))
+      .where(and(eq(cartItems.id, itemId), eq(cart.userId, userId)))
       .limit(1);
 
     if (!item.length) return sendResponse(c, 404, false, "Cart item not found");

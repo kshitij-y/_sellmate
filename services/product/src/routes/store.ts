@@ -8,6 +8,7 @@ import {
   getStoreProducts,
   updateStoreProduct,
 } from "../controllers/store.js";
+import { orderStoreProduct } from "../controllers/order.js";
 
 const storeRouter = new Hono();
 
@@ -20,5 +21,7 @@ storeRouter.patch("/:storeId", storeOwnershipMiddleware, updateStore);
 storeRouter.post( "/:storeId/product",storeOwnershipMiddleware,addStoreProduct);
 storeRouter.get("/:storeId/products", getStoreProducts);
 storeRouter.patch("/:storeId/product/:productId", storeOwnershipMiddleware, updateStoreProduct);
+// Order a store product (buy now)
+storeRouter.post("/:storeId/product/:productId/order", orderStoreProduct);
 
 export default storeRouter;
